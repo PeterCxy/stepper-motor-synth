@@ -1,3 +1,6 @@
 [submodule "ArduinoMIDI"]
 	path = ArduinoMIDI
 	url = https://github.com/FortySevenEffects/arduino_midi_library
+[submodule "TimerCounter"]
+	path = TimerCounter
+	url = https://github.com/ElectricRCAircraftGuy/eRCaGuy_TimerCounter

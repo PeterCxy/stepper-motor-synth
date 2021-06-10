@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <MIDI.h>
+#include <eRCaGuy_Timer2_Counter.h>
 #include "motor_control.h"
 
 #define NUM_MOTORS 4
@@ -53,6 +54,9 @@ int main() {
     // Needed for some functions to work (like micros)
     init();
 
+    // Timer based on Timer 2 (this breaks PWM output)
+    timer2.setup();
+
     // Enable the motor drivers
     pinMode(8, OUTPUT);
     digitalWrite(8, LOW);
@@ -70,7 +74,7 @@ int main() {
     MIDI.setHandleNoteOff(midi_note_off);
 
     while (true) {
-        unsigned long cur_micros = micros();
+        unsigned long cur_micros = timer2.get_count() / 2ul; // The unit of get_count is 0.5us
         handle_tick(cur_micros);
         MIDI.read();
     }

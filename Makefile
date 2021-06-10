@@ -24,6 +24,7 @@ VPATH       := $(foreach path, ${VPATH}, ${path} $(shell find ${path} -type d))
 # the VPATH list
 VPATH       += ${PWD} \
 	${PWD}/ArduinoMIDI/src \
+	${PWD}/TimerCounter \
 
 # Build parameters
 BUILD_DIR   := out
@@ -36,7 +37,7 @@ INCS        := \
 	$(foreach path, ${VPATH}, -I ${path}) \
 	$(foreach path, ${VARIANTS}, -I ${path}) \
 
-CFLAGS      := -O3 -DF_CPU=16000000UL ${MMCU} ${INCS}
+CFLAGS      := -O3 -DF_CPU=16000000UL -DARDUINO=1000 ${MMCU} ${INCS}
 # Generate sections for each function and variable
 # so that LD can eliminate unused functions and variables
 CFLAGS      += -ffunction-sections -fdata-sections
