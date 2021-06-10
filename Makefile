@@ -36,7 +36,7 @@ INCS        := \
 	$(foreach path, ${VPATH}, -I ${path}) \
 	$(foreach path, ${VARIANTS}, -I ${path}) \
 
-CFLAGS      := -Os -DF_CPU=16000000UL ${MMCU} ${INCS}
+CFLAGS      := -O3 -DF_CPU=16000000UL ${MMCU} ${INCS}
 # Generate sections for each function and variable
 # so that LD can eliminate unused functions and variables
 CFLAGS      += -ffunction-sections -fdata-sections
