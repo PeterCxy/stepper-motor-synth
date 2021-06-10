@@ -33,15 +33,39 @@ int main() {
         motors[i].Init();
     }
 
-    // Test: play a C chord
-    motors[0].TickAtPitch(60); // C4
-    motors[1].TickAtPitch(64); // E4
-    motors[2].TickAtPitch(67); // G4
+    // Test: play Twinkle Twinkle Little Star
+    unsigned long note_time = 500ul * 1000ul; // 500 ms
+    unsigned int seq_motor[4][15] = {
+        { 60, 60, 67, 67, 69, 69, 67, 0, 65, 65, 64, 64, 62, 62, 60 },
+        { 57, 57, 64, 64, 65, 65, 64, 0, 62, 62, 60, 60, 59, 59, 57},
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        { 48, 48, 53, 53, 48, 48, 0, 0, 53, 53, 48, 48, 55, 55, 48},
+    };
+    unsigned long last_note_ts = 0;
+    int cur_note = -1;
 
     while (true) {
         unsigned long cur_micros = micros();
-
         handle_tick(cur_micros);
+
+        if (cur_micros - last_note_ts >= note_time) {
+            last_note_ts = cur_micros;
+            cur_note += 1;
+
+            for (int i = 0; i < 4; i++) {
+                if (seq_motor[i][cur_note] != 0) {
+                    motors[i].TickAtPitch(seq_motor[i][cur_note]);
+                } else {
+                    motors[i].TickOff();
+                }
+
+                // Prevent out of bounds access
+                if (cur_note >= 15) {
+                    motors[i].TickOff();
+                    while (true) {}
+                }
+            }
+        }
     }
 
     return 0;
