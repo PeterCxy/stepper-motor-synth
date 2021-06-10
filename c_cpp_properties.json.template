@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "AVR",
+            "includePath": [__includePaths__],
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/avr-g++",
+            "compilerArgs": [
+                "-mmcu=atmega328p"
+            ],
+            "defines": [
+                "__ATmega328P__",
+                "__AVR_ATmega328P__"
+            ]
+        }
+    ]
+}
