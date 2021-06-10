@@ -23,6 +23,7 @@ VPATH       := $(foreach path, ${VPATH}, ${path} $(shell find ${path} -type d))
 # This is to prevent the command above from including directories like .git into
 # the VPATH list
 VPATH       += ${PWD} \
+	${PWD}/ArduinoMIDI/src \
 
 # Build parameters
 BUILD_DIR   := out

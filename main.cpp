@@ -1,7 +1,10 @@
 #include <Arduino.h>
+#include <MIDI.h>
 #include "motor_control.h"
 
 #define NUM_MOTORS 4
+
+using namespace midi;
 
 MotorControl motors[NUM_MOTORS] = {
     MotorControl(5, 2),
@@ -10,6 +13,18 @@ MotorControl motors[NUM_MOTORS] = {
     MotorControl(13, 12)
 };
 
+// MIDI setup
+struct MySerialMIDISettings {
+    // ttymidi wants a baud rate of 115200
+    static const long BaudRate = 115200;
+};
+
+typedef SerialMIDI<HardwareSerial, MySerialMIDISettings> MySerialMIDI;
+
+MySerialMIDI serialMIDI(Serial);
+
+MidiInterface<MySerialMIDI> MIDI(serialMIDI);
+
 void handle_tick(unsigned long cur_micros) {
     // Randomize the order we process motor ticks every time
     // This helps reduce the minor frequency discrepancies between each motor
@@ -17,6 +32,20 @@ void handle_tick(unsigned long cur_micros) {
     for (unsigned long i = start_val; i < start_val + NUM_MOTORS; i++) {
         motors[i % NUM_MOTORS].Tick(cur_micros);
     }
+}
+
+#define ASSERT_CHANNEL() \
+    if (channel <= 0) return; \
+    if (channel - 1 > NUM_MOTORS) return;
+
+void midi_note_on(uint8_t channel, uint8_t note, uint8_t velocity) {
+    ASSERT_CHANNEL();
+    motors[channel - 1].TickAtPitch(note);
+}
+
+void midi_note_off(uint8_t channel, uint8_t note, uint8_t velocity) {
+    ASSERT_CHANNEL();
+    motors[channel - 1].TickOff();
 }
 
 int main() {
@@ -33,39 +62,17 @@ int main() {
         motors[i].Init();
     }
 
-    // Test: play Twinkle Twinkle Little Star
-    unsigned long note_time = 500ul * 1000ul; // 500 ms
-    unsigned int seq_motor[4][15] = {
-        { 60, 60, 67, 67, 69, 69, 67, 0, 65, 65, 64, 64, 62, 62, 60 },
-        { 57, 57, 64, 64, 65, 65, 64, 0, 62, 62, 60, 60, 59, 59, 57},
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        { 48, 48, 53, 53, 48, 48, 0, 0, 53, 53, 48, 48, 55, 55, 48},
-    };
-    unsigned long last_note_ts = 0;
-    int cur_note = -1;
+    // Start serial MIDI interface
+    MIDI.begin(MIDI_CHANNEL_OMNI);
+
+    // Set up MIDI callbacks
+    MIDI.setHandleNoteOn(midi_note_on);
+    MIDI.setHandleNoteOff(midi_note_off);
 
     while (true) {
         unsigned long cur_micros = micros();
         handle_tick(cur_micros);
-
-        if (cur_micros - last_note_ts >= note_time) {
-            last_note_ts = cur_micros;
-            cur_note += 1;
-
-            for (int i = 0; i < 4; i++) {
-                if (seq_motor[i][cur_note] != 0) {
-                    motors[i].TickAtPitch(seq_motor[i][cur_note]);
-                } else {
-                    motors[i].TickOff();
-                }
-
-                // Prevent out of bounds access
-                if (cur_note >= 15) {
-                    motors[i].TickOff();
-                    while (true) {}
-                }
-            }
-        }
+        MIDI.read();
     }
 
     return 0;
