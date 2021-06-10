@@ -8,6 +8,15 @@ MotorControl motors[4] = {
     MotorControl(13, 12)
 };
 
+void handle_tick(unsigned long cur_micros) {
+    // Randomize the order we process motor ticks every time
+    // This helps reduce the minor frequency discrepancies between each motor
+    unsigned long start_val = (cur_micros / 10) % 4;
+    for (unsigned long i = start_val; i < start_val + 4; i++) {
+        motors[i % 4].Tick(cur_micros);
+    }
+}
+
 int main() {
     init();
     // Enable the motor drivers
@@ -25,9 +34,7 @@ int main() {
     while (true) {
         unsigned long cur_micros = micros();
 
-        for (int i = 0; i < 4; i++) {
-            motors[i].Tick(cur_micros);
-        }
+        handle_tick(cur_micros);
 
         int new_motor = (cur_micros / 1000 / 1000) % 4;
         
