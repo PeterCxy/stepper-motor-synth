@@ -33,25 +33,15 @@ int main() {
         motors[i].Init();
     }
 
-    // Test: play A4 (440 Hz) on each successive motor every second
-    int cur_motor = -1;
+    // Test: play a C chord
+    motors[0].TickAtPitch(60); // C4
+    motors[1].TickAtPitch(64); // E4
+    motors[2].TickAtPitch(67); // G4
 
     while (true) {
         unsigned long cur_micros = micros();
 
         handle_tick(cur_micros);
-
-        int new_motor = (cur_micros / 1000 / 1000) % 4;
-        
-        if (new_motor != cur_motor) {
-            motors[new_motor].TickOn(2272);
-
-            if (cur_motor != -1) {
-                motors[cur_motor].TickOff();
-            }
-
-            cur_motor = new_motor;
-        }
     }
 
     return 0;

@@ -88,7 +88,7 @@ endef
 	mkdir -p .vscode
 	sed 's@__includePaths__@$(call to-json-array, ${AVR_INC} ${VPATH} ${VARIANTS})@' c_cpp_properties.json.template > .vscode/c_cpp_properties.json
 
-.PHONY: all clean upload vscode
+.PHONY: all clean upload vscode pitch_table
 
 all: ${BUILD_DIR}/${PROGRAM}.hex
 
@@ -104,3 +104,6 @@ endif
 vscode:
 	rm -rf .vscode/c_cpp_properties.json
 	make .vscode/c_cpp_properties.json
+
+pitch_table:
+	python gen_pitch_table.py > pitch_table.h

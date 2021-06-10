@@ -17,6 +17,8 @@ class MotorControl {
         void Init();
         // Set the motor to tick at a given interval (inverse of frequency)
         void TickOn(unsigned long period_micros);
+        // Set the motor to tick with a given MIDI pitch
+        void TickAtPitch(unsigned int midi_pitch);
         // Turn off the motor
         void TickOff();
         // Perform a tick if necessary

@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "motor_control.h"
+#include "pitch_table.h"
 
 MotorControl::MotorControl(int pin_dir, int pin_step) :
     pin_dir(pin_dir), pin_step(pin_step),
@@ -20,6 +21,15 @@ void MotorControl::TickOn(unsigned long period_micros) {
     tick_period_micros = period_micros;
     // Force the next tick to happen
     last_tick_micros = 0;
+}
+
+void MotorControl::TickAtPitch(unsigned int midi_pitch) {
+    // Bounds check
+    if (midi_pitch < midi_pitch_offset || midi_pitch >= midi_pitch_max) {
+        return;
+    }
+    
+    TickOn(midi_pitch_period[midi_pitch - midi_pitch_offset]);
 }
 
 void MotorControl::TickOff() {
