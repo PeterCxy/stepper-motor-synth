@@ -18,7 +18,10 @@ void handle_tick(unsigned long cur_micros) {
 }
 
 int main() {
+    // Arduino library initialization
+    // Needed for some functions to work (like micros)
     init();
+
     // Enable the motor drivers
     pinMode(8, OUTPUT);
     digitalWrite(8, LOW);
