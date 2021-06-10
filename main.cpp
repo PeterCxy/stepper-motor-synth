@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include "motor_control.h"
 
-MotorControl motors[4] = {
+#define NUM_MOTORS 4
+
+MotorControl motors[NUM_MOTORS] = {
     MotorControl(5, 2),
     MotorControl(6, 3),
     MotorControl(7, 4),
@@ -11,9 +13,9 @@ MotorControl motors[4] = {
 void handle_tick(unsigned long cur_micros) {
     // Randomize the order we process motor ticks every time
     // This helps reduce the minor frequency discrepancies between each motor
-    unsigned long start_val = (cur_micros / 10) % 4;
-    for (unsigned long i = start_val; i < start_val + 4; i++) {
-        motors[i % 4].Tick(cur_micros);
+    unsigned long start_val = (cur_micros / 10) % NUM_MOTORS;
+    for (unsigned long i = start_val; i < start_val + NUM_MOTORS; i++) {
+        motors[i % NUM_MOTORS].Tick(cur_micros);
     }
 }
 
