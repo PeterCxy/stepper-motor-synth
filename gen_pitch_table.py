@@ -32,6 +32,9 @@ print("constexpr unsigned long midi_pitch_period[" + str(end_pitch - start_pitch
 
 for i in range(start_pitch, end_pitch):
     period = int(pitch_to_period_micros(i))
-    print("    " + str(period) + "ul,\t// " + pitch_to_name(i))
+    name = pitch_to_name(i)
+    if name == "D3" or name == "D#3" or name == "E3":
+        period = int(period / 2)
+    print("    " + str(period) + "ul,\t// " + name)
 
 print("};")
