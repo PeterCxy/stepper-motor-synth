@@ -41,7 +41,7 @@ void MotorControl::TickPitchBend(int bend) {
     // Scale the MIDI bend value down to 0 - 255
     bend = bend / 64;
 
-    tick_period_half_micros = (unsigned long) (((float) tick_period_orig_half_micros) * midi_pitch_bend_scale[bend]);
+    tick_period_half_micros = (unsigned long) (((float) tick_period_orig_half_micros) * pgm_read_float_near(midi_pitch_bend_scale + bend * sizeof(float)));
 }
 
 void MotorControl::TickOff() {

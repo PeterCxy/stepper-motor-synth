@@ -39,6 +39,7 @@ def pitch_to_name(pitch):
     return pitch_names[(pitch - pitch_A0) % 12] + str(int((pitch - pitch_C1) / 12) + 1)
 
 print("#pragma once")
+print("#include <avr/pgmspace.h>")
 print("")
 print("constexpr unsigned int midi_pitch_offset = " + str(start_pitch) + ";")
 print("constexpr unsigned int midi_pitch_max = " + str(end_pitch) + ";")
@@ -58,7 +59,7 @@ print("")
 print("// scale factors for bend values from 0 to 255")
 print("// We don't support the full 16385 levels of MIDI bend")
 print("// MIDI bend values have to be converted first to the nearest supported one")
-print("constexpr float midi_pitch_bend_scale[256] = {")
+print("constexpr PROGMEM float midi_pitch_bend_scale[256] = {")
 
 for i in range(0, 256):
     factor = pow(2, (8192 - i * 64) / 49152)
