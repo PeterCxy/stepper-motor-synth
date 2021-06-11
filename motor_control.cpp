@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "motor_control.h"
-#include "pitch_table.h"
+#include "./pitch_table.h"
 
 MotorControl::MotorControl(int pin_dir, int pin_step) :
     pin_dir(pin_dir), pin_step(pin_step),
