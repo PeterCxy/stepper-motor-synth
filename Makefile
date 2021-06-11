@@ -59,7 +59,7 @@ OBJS    := $(patsubst %.c, ${BUILD_DIR}/%.o, ${OBJS})
 OBJS    := $(patsubst %.cpp, ${BUILD_DIR}/%.o, ${OBJS})
 OBJS    := $(patsubst %.S, ${BUILD_DIR}/%_asm.o, ${OBJS})
 
-PROGRAM     := arduino-otp
+PROGRAM     := arduino-stepper-motor-synth
 
 # Build rules for different source types
 ${BUILD_DIR}/%.o: %.c pitch_table.h
