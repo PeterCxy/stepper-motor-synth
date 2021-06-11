@@ -8,11 +8,25 @@ pitch_C1 = 24
 pitch_A4 = 69
 freq_A4 = 440
 
+pitch_D5 = 74
+pitch_F5 = 77
+
 def pitch_to_freq(pitch):
     dist_A4 = pitch - pitch_A4
     factor = pow(2, abs(dist_A4) / 12)
     
     if dist_A4 > 0:
+        # Notes after A4 are about 20 cents flat
+        factor = factor * pow(2, 20 / 12 / 100)
+
+        if pitch >= pitch_D5:
+            # After D5 it's about another 10 cents flat
+            factor = factor * pow(2, 10 / 12 / 100)
+
+        if pitch >= pitch_F5:
+            # After F5 it's about another 10 cents flat
+            factor = factor * pow(2, 10 / 12 / 100)
+
         return freq_A4 * factor
     else:
         return freq_A4 / factor
