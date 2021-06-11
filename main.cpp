@@ -7,7 +7,7 @@
 
 // Minimal interval between reading two chunks of MIDI data
 // This improves frequency accuracy by throttling non-synthesizing actions
-#define MIDI_CMD_INTERVAL_MIN 15 * 1000 // 15ms
+#define MIDI_CMD_INTERVAL_MIN 1000 // 1ms
 
 using namespace midi;
 
