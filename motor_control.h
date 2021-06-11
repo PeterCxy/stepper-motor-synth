@@ -8,6 +8,8 @@ class MotorControl {
         unsigned long last_tick_half_micros;
         // Interval of motor ticking; 0 to disable the motor
         unsigned long tick_period_half_micros;
+        // Original period of motor ticking (without applying bend)
+        unsigned long tick_period_orig_half_micros;
 
         void DoTick();
     public:
@@ -19,6 +21,8 @@ class MotorControl {
         void TickOn(unsigned long period_half_micros);
         // Set the motor to tick with a given MIDI pitch
         void TickAtPitch(unsigned int midi_pitch);
+        // Set the pitch bend
+        void TickPitchBend(int bend);
         // Turn off the motor
         void TickOff();
         // Perform a tick if necessary

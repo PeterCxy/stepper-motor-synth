@@ -4,7 +4,8 @@
 
 MotorControl::MotorControl(int pin_dir, int pin_step) :
     pin_dir(pin_dir), pin_step(pin_step),
-    last_tick_half_micros(0), tick_period_half_micros(0)
+    last_tick_half_micros(0), tick_period_half_micros(0),
+    tick_period_orig_half_micros(0)
 {
     // No actual constructor logic -- initialization is in Init()
 }
@@ -19,6 +20,7 @@ void MotorControl::Init() {
 
 void MotorControl::TickOn(unsigned long period_half_micros) {
     tick_period_half_micros = period_half_micros;
+    tick_period_orig_half_micros = period_half_micros;
     // Force the next tick to happen
     last_tick_half_micros = 0;
 }
@@ -32,8 +34,19 @@ void MotorControl::TickAtPitch(unsigned int midi_pitch) {
     TickOn(midi_pitch_period[midi_pitch - midi_pitch_offset]);
 }
 
+void MotorControl::TickPitchBend(int bend) {
+    if (bend < 0 || bend >= 16384) return;
+    if (tick_period_orig_half_micros == 0) return;
+
+    // Scale the MIDI bend value down to 0 - 255
+    bend = bend / 64;
+
+    tick_period_half_micros = (unsigned long) (((float) tick_period_orig_half_micros) * midi_pitch_bend_scale[bend]);
+}
+
 void MotorControl::TickOff() {
     tick_period_half_micros = 0;
+    tick_period_orig_half_micros = 0;
 }
 
 void MotorControl::Tick(unsigned long cur_half_micros) {

@@ -53,6 +53,11 @@ void midi_note_off(uint8_t channel, uint8_t note, uint8_t velocity) {
     motors[channel - 1].TickOff();
 }
 
+void midi_pitch_bend(uint8_t channel, int bend) {
+    ASSERT_CHANNEL();
+    motors[channel - 1].TickPitchBend(bend);
+}
+
 int main() {
     // Arduino library initialization
     // Needed for some functions to work (like micros)
@@ -76,6 +81,7 @@ int main() {
     // Set up MIDI callbacks
     MIDI.setHandleNoteOn(midi_note_on);
     MIDI.setHandleNoteOff(midi_note_off);
+    MIDI.setHandlePitchBend(midi_pitch_bend);
 
     unsigned long cur_micros;
     unsigned long cur_half_micros;

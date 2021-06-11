@@ -53,3 +53,15 @@ for i in range(start_pitch, end_pitch):
     print("    " + str(period) + "ul,\t// " + name)
 
 print("};")
+
+print("")
+print("// scale factors for bend values from 0 to 255")
+print("// We don't support the full 16385 levels of MIDI bend")
+print("// MIDI bend values have to be converted first to the nearest supported one")
+print("constexpr float midi_pitch_bend_scale[256] = {")
+
+for i in range(0, 256):
+    factor = pow(2, (8192 - i * 64) / 49152)
+    print("    " + str(factor) + "f,\t// " + str(i))
+
+print("};")
