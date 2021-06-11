@@ -62,11 +62,11 @@ OBJS    := $(patsubst %.S, ${BUILD_DIR}/%_asm.o, ${OBJS})
 PROGRAM     := arduino-otp
 
 # Build rules for different source types
-${BUILD_DIR}/%.o: %.c
+${BUILD_DIR}/%.o: %.c pitch_table.h
 	mkdir -p ${BUILD_DIR}
 	${CC} ${CFLAGS} -c $< -o $@ 
  
-${BUILD_DIR}/%.o: %.cpp
+${BUILD_DIR}/%.o: %.cpp pitch_table.h
 	mkdir -p ${BUILD_DIR}
 	${CXX} ${CFLAGS} -c $< -o $@ 
 
@@ -80,6 +80,9 @@ ${BUILD_DIR}/${PROGRAM}.elf: ${OBJS}
 ${BUILD_DIR}/${PROGRAM}.hex: ${BUILD_DIR}/${PROGRAM}.elf
 	${OBJCOPY} -O ihex -R .eeprom $< $@
 
+pitch_table.h: gen_pitch_table.py
+	python gen_pitch_table.py > pitch_table.h
+
 define to-json-array
 	$(shell echo '$(foreach path, $1, "${path}",)' | sed "s/,$$//")
 endef
@@ -90,12 +93,13 @@ endef
 	mkdir -p .vscode
 	sed 's@__includePaths__@$(call to-json-array, ${AVR_INC} ${VPATH} ${VARIANTS})@' c_cpp_properties.json.template > .vscode/c_cpp_properties.json
 
-.PHONY: all clean upload vscode pitch_table
+.PHONY: all clean upload vscode
 
 all: ${BUILD_DIR}/${PROGRAM}.hex
 
 clean:
 	rm -rf ${BUILD_DIR}
+	rm -rf pitch_table.h
 
 upload: all
 ifndef PORT
@@ -106,6 +110,3 @@ endif
 vscode:
 	rm -rf .vscode/c_cpp_properties.json
 	make .vscode/c_cpp_properties.json
-
-pitch_table:
-	python gen_pitch_table.py > pitch_table.h
