@@ -78,11 +78,13 @@ int main() {
     MIDI.setHandleNoteOff(midi_note_off);
 
     unsigned long cur_micros;
+    unsigned long cur_half_micros;
     unsigned long last_read_micros = 0;
 
     while (true) {
-        cur_micros = timer2.get_count() / 2ul; // The unit of get_count is 0.5us
-        handle_tick(cur_micros);
+        cur_half_micros = timer2.get_count(); // The unit of get_count is 0.5us
+        cur_micros = cur_half_micros / 2ul;
+        handle_tick(cur_half_micros);
 
         if (cur_micros - last_read_micros >= MIDI_CMD_INTERVAL_MIN) {
             last_read_micros = cur_micros;

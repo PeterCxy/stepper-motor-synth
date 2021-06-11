@@ -28,10 +28,11 @@ print("#pragma once")
 print("")
 print("constexpr unsigned int midi_pitch_offset = " + str(start_pitch) + ";")
 print("constexpr unsigned int midi_pitch_max = " + str(end_pitch) + ";")
+print("// period is in units of 0.5 us, instead of 1 us")
 print("constexpr unsigned long midi_pitch_period[" + str(end_pitch - start_pitch) + "] = {")
 
 for i in range(start_pitch, end_pitch):
-    period = int(pitch_to_period_micros(i))
+    period = int(2.0 * pitch_to_period_micros(i))
     name = pitch_to_name(i)
     if name == "D3" or name == "D#3" or name == "E3":
         period = int(period / 2)

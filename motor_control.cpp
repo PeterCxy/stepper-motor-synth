@@ -4,7 +4,7 @@
 
 MotorControl::MotorControl(int pin_dir, int pin_step) :
     pin_dir(pin_dir), pin_step(pin_step),
-    last_tick_micros(0), tick_period_micros(0)
+    last_tick_half_micros(0), tick_period_half_micros(0)
 {
     // No actual constructor logic -- initialization is in Init()
 }
@@ -17,10 +17,10 @@ void MotorControl::Init() {
     digitalWrite(pin_step, LOW);
 }
 
-void MotorControl::TickOn(unsigned long period_micros) {
-    tick_period_micros = period_micros;
+void MotorControl::TickOn(unsigned long period_half_micros) {
+    tick_period_half_micros = period_half_micros;
     // Force the next tick to happen
-    last_tick_micros = 0;
+    last_tick_half_micros = 0;
 }
 
 void MotorControl::TickAtPitch(unsigned int midi_pitch) {
@@ -33,21 +33,21 @@ void MotorControl::TickAtPitch(unsigned int midi_pitch) {
 }
 
 void MotorControl::TickOff() {
-    tick_period_micros = 0;
+    tick_period_half_micros = 0;
 }
 
-void MotorControl::Tick(unsigned long cur_micros) {
-    if (cur_micros == 0) {
+void MotorControl::Tick(unsigned long cur_half_micros) {
+    if (cur_half_micros == 0) {
         return;
     }
 
-    if (tick_period_micros == 0) {
+    if (tick_period_half_micros == 0) {
         return;
     }
 
-    if (last_tick_micros == 0 || (cur_micros - last_tick_micros) >= tick_period_micros) {
+    if (last_tick_half_micros == 0 || (cur_half_micros - last_tick_half_micros) >= tick_period_half_micros) {
         DoTick();
-        last_tick_micros = cur_micros;
+        last_tick_half_micros = cur_half_micros;
     }
 }
 
