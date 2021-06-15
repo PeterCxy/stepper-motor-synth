@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <midi_Defs.h>
 #include "motor_control.h"
 #include "./pitch_table.h"
 
@@ -35,13 +36,17 @@ void MotorControl::TickAtPitch(unsigned int midi_pitch) {
 }
 
 void MotorControl::TickPitchBend(int bend) {
+    // Note: the Arduino MIDI library re-positions bend to [-8192, 8192) instead of the default [0, 16384)
+    // we need to correct for this here
+    bend = bend - MIDI_PITCHBEND_MIN;
+    
     if (bend < 0 || bend >= 16384) return;
     if (tick_period_orig_half_micros == 0) return;
 
     // Scale the MIDI bend value down to 0 - 2047
     bend = bend / 8;
 
-    tick_period_half_micros = (unsigned long) (((float) tick_period_orig_half_micros) * pgm_read_float_near(midi_pitch_bend_scale + bend * sizeof(float)));
+    tick_period_half_micros = (unsigned long) (((float) tick_period_orig_half_micros) * pgm_read_float_near(midi_pitch_bend_scale + bend));
 }
 
 void MotorControl::TickOff() {
