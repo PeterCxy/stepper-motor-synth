@@ -61,7 +61,9 @@ void MotorControl::Init() {
 
 void MotorControl::TickOn(unsigned long period_half_micros) {
     tick_ctrl.SetPeriod(period_half_micros);
-    next_tick_half_micros = tick_ctrl.NextTick();
+    // Delay every note for 20 ms to add a bit of gap (attack) between notes
+    // 20 ms should be short enough (you need > 350 bpm for 1/32 notes to be 20ms long)
+    next_tick_half_micros = tick_ctrl.NextTick() + 20 * 1000 * 2;
 }
 
 void MotorControl::TickAtPitch(unsigned int midi_pitch) {
