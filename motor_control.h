@@ -16,14 +16,15 @@ class TickController {
         void SetBend(unsigned int bend);
         // In units of half microseconds
         // 0 = disabled
-        unsigned int GetTruePeriod();
+        unsigned long NextTick();
+        unsigned long NextTickWithTs(unsigned long cur_half_micros);
 };
 
 class MotorControl {
     private:
         // Control pins of the stepper motor
         int pin_dir, pin_step;
-        unsigned long last_tick_half_micros;
+        unsigned long next_tick_half_micros;
         TickController tick_ctrl;
 
         void DoTick();

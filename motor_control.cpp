@@ -33,13 +33,20 @@ void TickController::CalculatePeriod() {
     period_with_bend = (unsigned int) (((float) period_half_micros) * pgm_read_float_near(midi_pitch_bend_scale + _bend));
 }
 
-unsigned int TickController::GetTruePeriod() {
-    return period_with_bend;
+unsigned long TickController::NextTick() {
+    return NextTickWithTs(timer2.get_count());
+}
+
+unsigned long TickController::NextTickWithTs(unsigned long cur_half_micros) {
+    if (period_with_bend == 0) {
+        return 0;
+    }
+    return cur_half_micros + period_with_bend;
 }
 
 MotorControl::MotorControl(int pin_dir, int pin_step) :
     pin_dir(pin_dir), pin_step(pin_step),
-    last_tick_half_micros(0)
+    next_tick_half_micros(0)
 {
     // No actual constructor logic -- initialization is in Init()
 }
@@ -54,8 +61,7 @@ void MotorControl::Init() {
 
 void MotorControl::TickOn(unsigned long period_half_micros) {
     tick_ctrl.SetPeriod(period_half_micros);
-    // Force a tick
-    last_tick_half_micros = 0;
+    next_tick_half_micros = tick_ctrl.NextTick();
 }
 
 void MotorControl::TickAtPitch(unsigned int midi_pitch) {
@@ -75,22 +81,23 @@ void MotorControl::TickPitchBend(int bend) {
     if (bend < 0 || bend >= 16384) return;
     
     tick_ctrl.SetBend(bend);
+    // We don't need to re-calculate next tick here, because if a note is currently on,
+    // it will eventually call NextTick() anyway
 }
 
 void MotorControl::TickOff() {
     tick_ctrl.SetPeriod(0);
+    next_tick_half_micros = tick_ctrl.NextTick();
 }
 
 void MotorControl::Tick(unsigned long cur_half_micros) {
-    unsigned long period = tick_ctrl.GetTruePeriod();
-
-    if (period == 0) {
+    if (next_tick_half_micros == 0) {
         return;
     }
 
-    if (last_tick_half_micros == 0 || cur_half_micros >= last_tick_half_micros + period) {
+    if (cur_half_micros >= next_tick_half_micros) {
         DoTick();
-        last_tick_half_micros = cur_half_micros;
+        next_tick_half_micros = tick_ctrl.NextTickWithTs(cur_half_micros);
     }
 }
 
