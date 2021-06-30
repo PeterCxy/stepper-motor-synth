@@ -1,15 +1,30 @@
 #pragma once
 
+class TickController {
+    private:
+        // 0 to disable
+        unsigned int period_half_micros;
+        // 0 - 16384, 8192 = no bend
+        unsigned int midi_bend;
+        unsigned int period_with_bend;
+        
+        void CalculatePeriod();
+
+    public:
+        TickController();
+        void SetPeriod(unsigned int half_micros);
+        void SetBend(unsigned int bend);
+        // In units of half microseconds
+        // 0 = disabled
+        unsigned int GetTruePeriod();
+};
+
 class MotorControl {
     private:
         // Control pins of the stepper motor
         int pin_dir, pin_step;
-        // Timestamp of the last motor tick
         unsigned long last_tick_half_micros;
-        // Interval of motor ticking; 0 to disable the motor
-        unsigned long tick_period_half_micros;
-        // Original period of motor ticking (without applying bend)
-        unsigned long tick_period_orig_half_micros;
+        TickController tick_ctrl;
 
         void DoTick();
     public:
