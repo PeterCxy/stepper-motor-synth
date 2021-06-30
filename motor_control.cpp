@@ -61,6 +61,11 @@ void MotorControl::Init() {
 
 void MotorControl::TickOn(unsigned long period_half_micros) {
     tick_ctrl.SetPeriod(period_half_micros);
+    // Notes below A4: rotate clockwise
+    // Notes above A4: rotate anticlockwise
+    // Notes are in units of __half micros__
+    digitalWrite(pin_dir, period_half_micros < 2300 * 2);
+
     // Delay every note for 5 ms to add a bit of gap (attack) between notes
     // 5 ms should be short enough (you need > 700 bpm for 1/64 notes to be 5ms long)
     next_tick_half_micros = tick_ctrl.NextTick() + (unsigned long) 5 * 1000 * 2;
