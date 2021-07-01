@@ -77,7 +77,7 @@ void MotorControl::TickAtPitch(unsigned int midi_pitch) {
         return;
     }
     
-    TickOn(midi_pitch_period[midi_pitch - midi_pitch_offset]);
+    TickOn(pgm_read_dword_near(midi_pitch_period + (midi_pitch - midi_pitch_offset)));
 }
 
 void MotorControl::TickPitchBend(int bend) {
